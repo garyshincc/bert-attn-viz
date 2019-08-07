@@ -1,6 +1,6 @@
 ##### some idiot model
 
-
+import pandas as pd
 import torch
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -12,6 +12,7 @@ logging.basicConfig(level=logging.INFO)
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
 text = "[CLS] Who was Jim Henson ? [SEP] Jim Henson was a puppeteer [SEP]"
+
 tokens = tokenizer.tokenize(text)
 
 # Convert token to vocabulary indices
@@ -33,6 +34,8 @@ model.to('cuda')
 with torch.no_grad():
     _, _, attn_data_list = model(tokens_tensor)
 
+# shape is 12 x batch_size x 12 x max_seq_len x max_seq_len
+
 print(type(attn_data_list))
 print(len(attn_data_list))
 print(attn_data_list[0].shape)
@@ -41,8 +44,12 @@ last_layer_attn = attn_data_list[0][-1]
 for attn_type in range(len(last_layer_attn)):
 	attn = last_layer_attn[attn_type]
 	plt.figure()
-	sns.heatmap(attn.cpu())
+	df = pd.DataFrame(attn.cpu().numpy(), columns=text.split() + [" "])
+	print(df)
+	sns.heatmap(df, annot=True)
 plt.show()
+
+
 
 # # confirm we were able to predict 'henson'
 # predicted_index = torch.argmax(predictions[0, masked_index]).item()
