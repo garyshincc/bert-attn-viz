@@ -44,7 +44,8 @@ last_layer_attn = attn_data_list[0][-1]
 for attn_type in range(len(last_layer_attn)):
 	attn = last_layer_attn[attn_type]
 	plt.figure()
-	df = pd.DataFrame(attn.cpu().numpy(), columns=text.split() + [" "])
+	df = pd.DataFrame(attn.cpu().numpy(), columns=tokens)
+	df.index = tokens
 	print(df)
 	sns.heatmap(df, annot=True)
 plt.show()
